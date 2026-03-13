@@ -1,6 +1,12 @@
-# Cartão de Todos - Meta WhatsApp Business API Platform
+# Cartão de Todos - Plataforma WhatsApp Business
 
-A modern full-stack platform for managing and sending WhatsApp Business messages using the Meta WhatsApp Business API.
+Plataforma profissional para disparos em massa via WhatsApp Business com design nível Apple.
+
+## 🚀 Deploy Vercel
+
+**IMPORTANTE**: Este projeto usa uma estrutura monorepo. O frontend está na pasta `frontend/`.
+
+O arquivo `vercel.json` já está configurado corretamente para build automático.
 
 ## Project Overview
 
