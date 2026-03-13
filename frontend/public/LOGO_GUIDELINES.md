@@ -1,0 +1,172 @@
+# Cartão de Todos - Logo and Brand Assets
+
+## Logo Overview
+The Cartão de Todos logo combines typography with an abstract graphic element that suggests community, connection, and inclusivity. The brand identity uses vibrant colors to create a modern, approachable feel.
+
+## Logo Files
+
+### Main Logo
+- **File**: `/frontend/public/logo.svg`
+- **Dimensions**: 123px × 32px (vectorized)
+- **Format**: SVG (scalable)
+- **Colors**: White text with accent colors
+- **Use case**: Primary logo for headers, navigation, and light backgrounds
+
+### Favicon Assets
+All favicon files are located in `/frontend/public/assets/favicon/`:
+
+- **favicon.ico** (15KB) - Multi-resolution ICO file for browser tabs
+- **favicon-16x16.png** (952B) - 16×16px PNG
+- **favicon-32x32.png** (1.5KB) - 32×32px PNG
+- **apple-touch-icon.png** (9.6KB) - 180×180px for iOS devices
+- **safari-pinned-tab.svg** (1.7KB) - Monochrome SVG for Safari pinned tabs
+
+### Social Media Assets
+- **og-image.png** (169B) - Open Graph image for social media sharing (1200×630px)
+
+## Brand Colors
+
+### Primary Colors
+- **Brand Green**: `#A6FF00` - Vibrant lime green accent
+- **Primary Teal**: `#00A988` - Main brand color (used in gradients)
+- **White**: `#FFFFFF` - Text and logo elements
+
+### Secondary Colors
+- **Coral/Orange**: `#da532c` - Microsoft tile color accent
+
+## Usage Guidelines
+
+### Logo Placement
+1. **Navigation Bar**: Use the main logo.svg (123×32px) in the site header
+2. **Footer**: Can use a smaller version of logo.svg
+3. **Dark Backgrounds**: The current logo is designed for dark backgrounds with white text
+4. **Light Backgrounds**: Consider creating an inverted version if needed
+
+### Minimum Size
+- Desktop: Minimum width 100px
+- Mobile: Minimum width 80px
+- Do not scale below these dimensions to maintain legibility
+
+### Clear Space
+Maintain minimum clear space around the logo equal to the height of the letter "C" in "Cartão"
+
+### Favicon Implementation
+Add to your HTML `<head>` section:
+
+```html
+<link rel="icon" type="image/x-icon" href="/assets/favicon/favicon.ico" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png" />
+<link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#00A988" />
+<meta name="theme-color" content="#00A988" />
+
+<!-- Open Graph / Social Media -->
+<meta property="og:image" content="/og-image.png" />
+```
+
+### Next.js Implementation
+For Next.js 14, add to your root layout or metadata configuration:
+
+```typescript
+// app/layout.tsx
+export const metadata: Metadata = {
+  icons: {
+    icon: [
+      { url: '/assets/favicon/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/assets/favicon/favicon-16x16.png', sizes: '16x16', type: 'image/png' }
+    ],
+    apple: '/assets/favicon/apple-touch-icon.png',
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/assets/favicon/safari-pinned-tab.svg',
+      }
+    ]
+  },
+  themeColor: '#00A988',
+  openGraph: {
+    images: ['/og-image.png']
+  }
+}
+```
+
+## Logo Component Example
+
+### React/Next.js Logo Component
+```typescript
+// components/Logo.tsx
+import Image from 'next/image'
+import Link from 'next/link'
+
+interface LogoProps {
+  width?: number
+  height?: number
+  className?: string
+}
+
+export function Logo({ width = 123, height = 32, className = '' }: LogoProps) {
+  return (
+    <Link href="/" className={className}>
+      <Image
+        src="/logo.svg"
+        alt="Cartão de Todos"
+        width={width}
+        height={height}
+        priority
+      />
+    </Link>
+  )
+}
+```
+
+## Accessibility
+
+### Alt Text Guidelines
+- **Standard**: "Cartão de Todos"
+- **Descriptive**: "Cartão de Todos - WhatsApp Business Platform"
+- **Navigation**: "Cartão de Todos Home"
+
+### ARIA Labels
+When using the logo as a clickable link:
+```html
+<a href="/" aria-label="Cartão de Todos - Return to homepage">
+  <img src="/logo.svg" alt="Cartão de Todos" />
+</a>
+```
+
+## Technical Specifications
+
+### SVG Structure
+- Clean, optimized SVG paths
+- No embedded raster images
+- Uses fill colors (easily customizable)
+- Includes linear gradient definitions
+- Proper viewBox for scaling
+
+### File Sizes
+- Main logo SVG: 13KB (uncompressed)
+- Highly optimized for web use
+- SVG allows lossless scaling
+
+## Do's and Don'ts
+
+### Do:
+- Use the provided logo files without modification
+- Maintain aspect ratio when scaling
+- Ensure sufficient contrast with background
+- Use approved color variations
+
+### Don't:
+- Distort, rotate, or skew the logo
+- Change logo colors (except approved variations)
+- Add effects (shadows, outlines, etc.)
+- Place logo on busy backgrounds
+- Recreate or redraw the logo
+
+## Contact
+For additional brand assets or questions about logo usage, refer to the main project documentation.
+
+---
+*Last Updated: March 11, 2026*
+*Generated by Uma - UX/UI Design Expert*

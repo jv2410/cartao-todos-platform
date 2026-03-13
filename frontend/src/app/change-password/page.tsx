@@ -9,6 +9,7 @@ import { Button } from '../../components/ui/button';
 import { PasswordRequirements } from '../../components/password-requirements';
 import { PasswordStrengthIndicator } from '../../components/password-strength-indicator';
 import { isPasswordValid, isDefaultPassword } from '../../lib/password-validation';
+import { Logo } from '@/components/Logo';
 
 /**
  * Change Password Page
@@ -112,13 +113,23 @@ export default function ChangePasswordPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Alterar Senha
-            </h1>
-            <p className="text-sm text-gray-600">
-              Por segurança, você deve alterar sua senha padrão antes de continuar.
-            </p>
+          <div className="mb-6 flex items-start gap-4">
+            <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg p-3 shadow-md">
+              <Logo
+                width={92}
+                height={24}
+                className="h-6 w-auto"
+                linkTo=""
+              />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                Alterar Senha
+              </h1>
+              <p className="text-sm text-gray-600">
+                Por segurança, você deve alterar sua senha padrão antes de continuar.
+              </p>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

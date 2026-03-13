@@ -2,12 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import useAuth from '@/hooks/useAuth';
 import apiClient from '../../lib/api-client';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Button } from '../../components/ui/button';
 import { ConfirmDialog } from '../../components/ui/confirm-dialog';
 import { TestResultBanner } from '../../components/settings/test-result-banner';
+import { Sidebar } from '@/components/shared/Sidebar';
+import { PageHeader } from '@/components/shared/PageHeader';
+import { Key, Shield, TestTube, CheckCircle, Info } from 'lucide-react';
 
 /**
  * Settings Page
@@ -24,6 +28,7 @@ interface CredentialsData {
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { user, isLoading: isAuthLoading, logout, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     wabaId: '',
     phoneNumberId: '',
@@ -36,7 +41,7 @@ export default function SettingsPage() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [isLoadingToken, setIsLoadingToken] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<{
@@ -47,8 +52,16 @@ export default function SettingsPage() {
   } | null>(null);
 
   useEffect(() => {
-    loadCredentials();
-  }, []);
+    if (!isAuthLoading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthLoading, isAuthenticated, router]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadCredentials();
+    }
+  }, [isAuthenticated]);
 
   const loadCredentials = async () => {
     try {
@@ -110,7 +123,7 @@ export default function SettingsPage() {
     setShowConfirmDialog(false);
     setError(null);
     setSuccess(null);
-    setIsLoading(true);
+    setIsSaving(true);
 
     try {
       await apiClient.put('/api/settings/credentials', {
@@ -129,7 +142,7 @@ export default function SettingsPage() {
         err.response?.data?.message || 'Erro ao salvar credenciais. Tente novamente.';
       setError(errorMessage);
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
   };
 
@@ -179,11 +192,6 @@ export default function SettingsPage() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    router.push('/login');
-  };
-
   const isFormValid =
     formData.wabaId &&
     formData.phoneNumberId &&
@@ -193,29 +201,64 @@ export default function SettingsPage() {
     formData.accessToken.length >= 50 &&
     (!formData.businessManagerId || /^\d{15,17}$/.test(formData.businessManagerId));
 
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="mb-6 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50 flex">
+      <Sidebar username={user.username} onLogout={logout} />
+
+      <main className="flex-1 lg:ml-64 p-8">
+        <PageHeader
+          title="Configurações"
+          description="Configure as credenciais da Meta API para WhatsApp Business"
+        />
+
+        <div className="max-w-3xl">
+          {/* Info Banner */}
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
+            <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Configurações
-              </h1>
-              <p className="text-sm text-gray-600">
-                Configure as credenciais da Meta API para conectar ao WhatsApp Business
+              <h3 className="text-sm font-medium text-blue-900">Como obter suas credenciais</h3>
+              <p className="text-sm text-blue-700 mt-1">
+                Acesse o{' '}
+                <a
+                  href="https://business.facebook.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-medium"
+                >
+                  Meta Business Manager
+                </a>{' '}
+                e navegue até WhatsApp &gt; API Setup para encontrar suas credenciais.
               </p>
             </div>
-            <Button onClick={handleLogout} variant="outline">
-              Sair
-            </Button>
           </div>
 
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="border-b pb-4">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Meta API Configuration
-              </h2>
+            <div className="pb-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                  <Key className="w-5 h-5 text-primary-600" />
+                </div>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Credenciais Meta API
+                </h2>
+              </div>
 
               {/* WABA ID */}
               <div className="mb-4">
@@ -341,34 +384,18 @@ export default function SettingsPage() {
                   onClick={handleTestConnection}
                   disabled={!isFormValid || isTesting}
                   variant="outline"
-                  className="w-full"
+                  className="w-full flex items-center justify-center gap-2"
                 >
                   {isTesting ? (
-                    <span className="flex items-center justify-center">
-                      <svg
-                        className="animate-spin -ml-1 mr-2 h-4 w-4"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Testando...
-                    </span>
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                      <span>Testando Conexão...</span>
+                    </>
                   ) : (
-                    'Testar Conexão'
+                    <>
+                      <TestTube className="w-4 h-4" />
+                      <span>Testar Conexão</span>
+                    </>
                   )}
                 </Button>
               </div>
@@ -387,23 +414,18 @@ export default function SettingsPage() {
               )}
 
               {existingCredentials?.last_tested_at && (
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                  <p className="text-sm text-blue-800 flex items-center">
-                    <svg
-                      className="h-4 w-4 mr-2 text-green-600"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Última conexão testada:{' '}
-                    {new Date(existingCredentials.last_tested_at).toLocaleString('pt-BR')}
-                  </p>
+                <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-green-900">
+                        Última conexão testada com sucesso
+                      </p>
+                      <p className="text-xs text-green-700 mt-0.5">
+                        {new Date(existingCredentials.last_tested_at).toLocaleString('pt-BR')}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -425,24 +447,25 @@ export default function SettingsPage() {
             {/* Submit Button */}
             <Button
               type="submit"
-              disabled={!isFormValid || isLoading}
-              className="w-full"
+              disabled={!isFormValid || isSaving}
+              className="w-full flex items-center justify-center gap-2"
             >
-              {isLoading ? 'Salvando...' : 'Salvar Credenciais'}
+              {isSaving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>Salvando...</span>
+                </>
+              ) : (
+                <>
+                  <Shield className="w-4 h-4" />
+                  <span>Salvar Credenciais</span>
+                </>
+              )}
             </Button>
           </form>
         </div>
-
-        {/* Navigation */}
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="text-sm text-gray-600 hover:text-gray-900 underline"
-          >
-            Voltar ao Dashboard
-          </button>
         </div>
-      </div>
+      </main>
 
       {/* Confirmation Dialog */}
       <ConfirmDialog

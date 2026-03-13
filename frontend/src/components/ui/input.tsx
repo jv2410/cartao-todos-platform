@@ -27,11 +27,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           type={inputType}
           className={clsx(
             'w-full px-4 py-3 rounded-lg border transition-colors duration-200',
-            'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-            'disabled:bg-gray-100 disabled:cursor-not-allowed',
+            'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+            'disabled:bg-secondary-100 disabled:cursor-not-allowed',
             error
               ? 'border-red-500 focus:ring-red-500'
-              : 'border-gray-300 hover:border-gray-400',
+              : 'border-secondary-300 hover:border-secondary-400',
             className
           )}
           {...props}
@@ -43,8 +43,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             onClick={() => setShowPassword(!showPassword)}
             className={clsx(
               'absolute right-3 top-1/2 -translate-y-1/2',
-              'text-gray-500 hover:text-gray-700',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded',
+              'text-secondary-500 hover:text-secondary-700',
+              'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded',
               'p-1'
             )}
             aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
@@ -95,4 +95,5 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
 Input.displayName = 'Input';
 
+export { Input };
 export default Input;

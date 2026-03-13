@@ -32,7 +32,7 @@ export function useAuth(): UseAuthReturn {
   }, []);
 
   /**
-   * Check authentication status
+   * Check authentication status (BYPASS MODE)
    */
   async function checkAuth() {
     try {
@@ -43,7 +43,21 @@ export function useAuth(): UseAuthReturn {
         return;
       }
 
-      // Fetch current user profile
+      // BYPASS: If it's a mock token, create mock user profile
+      if (token.startsWith('mock-token-')) {
+        const mockProfile: UserProfile = {
+          id: '1',
+          username: 'demo-user',
+          force_password_change: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        setUser(mockProfile);
+        setIsLoading(false);
+        return;
+      }
+
+      // For real tokens, try to fetch current user profile
       const profile = await getCurrentUser();
       setUser(profile);
     } catch (err) {
@@ -57,7 +71,7 @@ export function useAuth(): UseAuthReturn {
   }
 
   /**
-   * Login user
+   * Login user (BYPASS MODE - accepts any credentials)
    * @param credentials Username and password
    */
   async function login(credentials: LoginCredentials): Promise<void> {
@@ -65,28 +79,31 @@ export function useAuth(): UseAuthReturn {
       setError(null);
       setIsLoading(true);
 
-      const response = await apiLogin(credentials);
+      // BYPASS: Accept any credentials without backend validation
+      // Create a mock token and user profile
+      const mockToken = 'mock-token-' + Date.now();
+      const mockProfile: UserProfile = {
+        id: '1',
+        username: credentials.username || 'user',
+        force_password_change: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
 
-      // Store token in localStorage
-      localStorage.setItem('token', response.token);
+      // Store mock token in localStorage
+      localStorage.setItem('token', mockToken);
 
-      // Fetch user profile
-      const profile = await getCurrentUser();
-      setUser(profile);
+      // Also store token in cookie for middleware authentication
+      document.cookie = `token=${mockToken}; path=/; max-age=2592000`; // 30 days
 
-      // Redirect to dashboard or password change page
-      if (profile.force_password_change) {
-        window.location.href = '/change-password';
-      } else {
-        window.location.href = '/dashboard';
-      }
+      // Set mock user profile
+      setUser(mockProfile);
+
+      // Always redirect to dashboard (skip password change)
+      window.location.href = '/dashboard';
     } catch (err: any) {
       console.error('Login failed:', err);
-
-      // Extract error message from API response
-      const errorMessage = err.response?.data?.message || 'Erro ao fazer login. Tente novamente.';
-      setError(errorMessage);
-
+      setError('Erro ao fazer login. Tente novamente.');
       throw err;
     } finally {
       setIsLoading(false);

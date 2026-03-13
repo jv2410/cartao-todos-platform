@@ -16,7 +16,7 @@ const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
       <label
         ref={ref}
         className={clsx(
-          'block text-sm font-medium text-gray-700 mb-1',
+          'block text-sm font-medium text-secondary-700 mb-1',
           className
         )}
         {...props}
@@ -30,4 +30,5 @@ const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
 
 Label.displayName = 'Label';
 
+export { Label };
 export default Label;

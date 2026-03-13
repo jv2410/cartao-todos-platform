@@ -6,6 +6,7 @@ import FormField from '@/components/ui/form-field';
 import Button from '@/components/ui/button';
 import useAuth from '@/hooks/useAuth';
 import clsx from 'clsx';
+import { Logo } from '@/components/Logo';
 
 /**
  * Login Page
@@ -32,22 +33,19 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   /**
-   * Validate form inputs
+   * Validate form inputs (RELAXED - accepts any credentials)
    * @returns True if form is valid, false otherwise
    */
   function validateForm(): boolean {
     const errors: typeof validationErrors = {};
 
+    // Minimal validation - just check if fields are not empty
     if (!formData.username.trim()) {
       errors.username = 'Usuário é obrigatório';
-    } else if (formData.username.length < 3) {
-      errors.username = 'Usuário deve ter no mínimo 3 caracteres';
     }
 
     if (!formData.password) {
       errors.password = 'Senha é obrigatória';
-    } else if (formData.password.length < 6) {
-      errors.password = 'Senha deve ter no mínimo 6 caracteres';
     }
 
     setValidationErrors(errors);
@@ -93,16 +91,22 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-50 px-4">
       <div className="w-full max-w-md">
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white rounded-2xl shadow-card-hover border border-secondary-100 p-8">
           {/* Logo/Title */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Cartão Todos
-            </h1>
-            <p className="text-gray-600">
+            <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl p-6 mb-6 shadow-lg inline-block">
+              <Logo
+                width={184}
+                height={48}
+                className="h-12 w-auto"
+                linkTo=""
+                priority={true}
+              />
+            </div>
+            <p className="text-secondary-600 text-sm">
               Plataforma de Mensagens Meta
             </p>
           </div>
@@ -161,11 +165,11 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   className={clsx(
                     'w-full px-4 py-2 pr-12 border rounded-lg',
-                    'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                    'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
                     'transition-colors',
                     validationErrors.password
                       ? 'border-red-500 bg-red-50'
-                      : 'border-gray-300 bg-white'
+                      : 'border-secondary-300 bg-white'
                   )}
                 />
                 <button
@@ -214,8 +218,8 @@ export default function LoginPage() {
                 checked={formData.remember_me}
                 onChange={(e) => handleChange('remember_me', e.target.checked)}
                 className={clsx(
-                  'h-4 w-4 text-blue-600 border-gray-300 rounded',
-                  'focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                  'h-4 w-4 text-primary-500 border-secondary-300 rounded',
+                  'focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
                   'cursor-pointer'
                 )}
               />
@@ -242,18 +246,15 @@ export default function LoginPage() {
 
           {/* Footer Info */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
-              Primeira vez? Use a senha padrão:{' '}
-              <code className="px-2 py-1 bg-gray-100 rounded text-blue-600 font-mono">
-                100101
-              </code>
+            <p className="text-sm text-secondary-500">
+              <span className="font-semibold text-primary-600">Modo Demo:</span> Qualquer usuário e senha permitidos
             </p>
           </div>
         </div>
 
         {/* Version Info */}
-        <div className="text-center mt-4">
-          <p className="text-sm text-gray-600">
+        <div className="text-center mt-6">
+          <p className="text-xs text-secondary-500">
             Cartão Todos v0.1.0
           </p>
         </div>

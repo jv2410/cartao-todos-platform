@@ -56,7 +56,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
         {helperText && !hasError && (
           <p
             id={`${inputId}-helper`}
-            className="mt-1 text-sm text-gray-500"
+            className="mt-1 text-sm text-secondary-500"
           >
             {helperText}
           </p>
